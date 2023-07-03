@@ -8,6 +8,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pages: write
       id-token: write
     environment:
@@ -15,13 +16,15 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: "yarn"
-      - run: yarn --frozen-lockfile
-      - run: yarn prepublishOnly
-      - run: yarn docs:build
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run docs:build
       - uses: actions/configure-pages@v3
       - uses: actions/upload-pages-artifact@v1
         with:
